@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: prize-draw-system
+  jpa:
+    hibernate:
+      ddl-auto: validate
+
+server:
+  port: 12939
