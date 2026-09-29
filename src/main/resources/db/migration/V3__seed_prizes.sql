@@ -1,32 +1,34 @@
 DO
 $$
-DECLARE
-v_start TIMESTAMPTZ := '2026-06-01 00:00:00+02';
-    v_end
-TIMESTAMPTZ := '2026-10-31 23:59:59+02';
-    v_diff
-INTERVAL;
-BEGIN
-    v_diff
-:= v_end - v_start;
+    DECLARE
+        v_start_date DATE := '2026-06-01';
+        v_total_days INT  := 153; -- 01.06.2026 - 31.10.2026
+        r            RECORD;
+    BEGIN
 
--- 30 000 T-Shirts
-INSERT INTO prize_pool (category, status, release_time)
-SELECT 'TSHIRT', 'AVAILABLE', v_start + (random() * v_diff)
-FROM generate_series(1, 30000);
-
--- 20 000 Shopper bags
-INSERT INTO prize_pool (category, status, release_time)
-SELECT 'SHOPPER', 'AVAILABLE', v_start + (random() * v_diff)
-FROM generate_series(1, 20000);
-
--- 20 000 Socks
-INSERT INTO prize_pool (category, status, release_time)
-SELECT 'SOCKS', 'AVAILABLE', v_start + (random() * v_diff)
-FROM generate_series(1, 20000);
-
--- 5 000 Caps
-INSERT INTO prize_pool (category, status, release_time)
-SELECT 'CAP', 'AVAILABLE', v_start + (random() * v_diff)
-FROM generate_series(1, 5000);
-END $$;
+        FOR r IN
+            SELECT 'TSHIRT' AS cat, 30000 AS qty
+            UNION ALL
+            SELECT 'SHOPPER', 20000
+            UNION ALL
+            SELECT 'SOCKS', 20000
+            UNION ALL
+            SELECT 'CAP', 5000
+            LOOP
+                INSERT INTO prize_pool (category, status, release_time)
+                SELECT r.cat,
+                       'AVAILABLE',
+                       ((v_start_date + (floor(random() * v_total_days))::INT)::TEXT || ' ' ||
+                        CASE
+                            -- 3% 00:00:00 - 07:59:59
+                            WHEN random() < 0.03 THEN
+                                ('00:00:00'::TIME + (random() * INTERVAL '7 hours 59 minutes 59 seconds'))::TEXT
+                            -- 97% 08:00:00 - 23:59:59
+                            ELSE
+                                ('08:00:00'::TIME + (random() * INTERVAL '15 hours 59 minutes 59 seconds'))::TEXT
+                            END
+                           )::TIMESTAMP AT TIME ZONE 'Europe/Berlin'
+                FROM generate_series(1, r.qty);
+            END LOOP;
+    END
+$$;
