@@ -1,7 +1,6 @@
 package com.anhub.prize_draw_system.promocodes;
 
 import io.github.cdimascio.dotenv.Dotenv;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Mac;
@@ -85,7 +84,7 @@ public class CryptoPromoCodeService {
             int value = ((hash[0] & 0xFF) << 12) | ((hash[1] & 0xFF) << 4) | ((hash[2] & 0xF0) >>> 4);
             return value & 0xFFFFF;
         } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new IllegalStateException("Ошибка вычисления HMAC", e);
+            throw new IllegalStateException("Error computing HMAC", e);
         }
     }
 

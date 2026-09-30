@@ -1,4 +1,4 @@
-package com.anhub.prize_draw_system;
+package com.anhub.prize_draw_system.draw.enumerated;
 
 public enum DrawAlgorithmType {
     WINNING_MOMENTS,
