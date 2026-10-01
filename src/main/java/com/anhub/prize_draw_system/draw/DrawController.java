@@ -1,8 +1,12 @@
 package com.anhub.prize_draw_system.draw;
 
 import com.anhub.prize_draw_system.draw.dto.DrawRequest;
+import com.anhub.prize_draw_system.draw.dto.PrizeDTO;
 import com.anhub.prize_draw_system.prizes.Prize;
+import com.anhub.prize_draw_system.prizes.Voucher;
+import com.anhub.prize_draw_system.prizes.VoucherService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,11 +20,25 @@ import java.util.Optional;
 public class DrawController {
 
     private final PrizeDrawStrategy prizeDrawStrategy;
+    private final VoucherService voucherService;
 
     @PostMapping
-    public Optional<Prize> draw(@RequestBody DrawRequest drawRequest) {
+    public ResponseEntity<PrizeDTO> draw(@RequestBody DrawRequest drawRequest) {
         Optional<Prize> prize = prizeDrawStrategy.tryWinPrize(drawRequest);
-        return Optional.empty();
+        PrizeDTO prizeDTO = new PrizeDTO();
+
+        if (prize.isEmpty()) {
+            String voucherCode = voucherService.getVoucherCode(drawRequest);
+
+            prizeDTO.setName("VOUCHER");
+            prizeDTO.setCode(voucherCode);
+
+        } else {
+            prizeDTO.setName(prize.get().getCategory().toString());
+            prizeDTO.setCode("111");
+        }
+
+        return ResponseEntity.ok(prizeDTO);
 
     }
 }
