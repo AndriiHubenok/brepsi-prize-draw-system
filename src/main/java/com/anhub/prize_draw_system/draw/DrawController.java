@@ -35,10 +35,9 @@ public class DrawController {
 
         } else {
             prizeDTO.setName(prize.get().getCategory().toString());
-            prizeDTO.setCode("111");
+            prizeDTO.setCode(prize.get().getCode());
         }
 
         return ResponseEntity.ok(prizeDTO);
-
     }
 }

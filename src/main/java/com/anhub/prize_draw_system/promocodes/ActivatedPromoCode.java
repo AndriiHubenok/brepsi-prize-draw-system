@@ -20,7 +20,7 @@ public class ActivatedPromoCode {
     private String code;
 
     @Column(name = "serial_id", nullable = false, unique = true)
-    private Integer serialId;
+    private Long serialId;
 
     @Column(name = "user_id", nullable = false, length = 255)
     private String userId;

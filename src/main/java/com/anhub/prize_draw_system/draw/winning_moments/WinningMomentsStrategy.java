@@ -8,6 +8,7 @@ import com.anhub.prize_draw_system.draw.PrizeDrawStrategy;
 import com.anhub.prize_draw_system.prizes.PrizeRepository;
 import com.anhub.prize_draw_system.prizes.enumerated.Status;
 import com.anhub.prize_draw_system.promocodes.CryptoPromoCodeService;
+import com.anhub.prize_draw_system.promocodes.PromoCodeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class WinningMomentsStrategy implements PrizeDrawStrategy {
 
     private final CryptoPromoCodeService cryptoPromoCodeService;
+    private final PromoCodeService promoCodeService;
     private final PrizeRepository prizeRepository;
 
     @Override
@@ -36,6 +38,7 @@ public class WinningMomentsStrategy implements PrizeDrawStrategy {
         String userId = (drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail())
                 .toLowerCase();
         Instant currentTime = Instant.now();
+        promoCodeService.checkAndActivatePromoCode(promoCode, serial, userId, currentTime);
 
         Prize prize = prizeRepository.tryWinPrize(currentTime).orElse(null);
         if (prize == null) {

@@ -30,6 +30,9 @@ public class Prize {
     @Column(name = "release_time", nullable = false)
     private Instant releaseTime;
 
+    @Column(name = "code", unique = true, length = 20)
+    private String code;
+
     @Column(name = "winner_user_id")
     private String winnerUserId;
 
