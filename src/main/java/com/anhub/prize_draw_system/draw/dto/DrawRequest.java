@@ -25,6 +25,6 @@ public class DrawRequest {
     @NotBlank(message = "Supermarket is required")
     private Supermarket supermarket;
 
-    @NotBlank(message = "Desired prize is required")
-    private DesiredArticle desiredPrize;
+    @NotBlank(message = "Desired article is required")
+    private DesiredArticle desiredArticle;
 }

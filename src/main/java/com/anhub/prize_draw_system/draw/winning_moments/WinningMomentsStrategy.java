@@ -1,7 +1,9 @@
 package com.anhub.prize_draw_system.draw.winning_moments;
 
+import com.anhub.prize_draw_system.draw.enumerated.DesiredArticle;
 import com.anhub.prize_draw_system.draw.enumerated.DrawAlgorithmType;
 import com.anhub.prize_draw_system.draw.dto.DrawRequest;
+import com.anhub.prize_draw_system.draw.enumerated.Supermarket;
 import com.anhub.prize_draw_system.draw.exceptions.IncorrectPromoCode;
 import com.anhub.prize_draw_system.prizes.Prize;
 import com.anhub.prize_draw_system.draw.PrizeDrawStrategy;
@@ -14,7 +16,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.util.Locale;
 import java.util.Optional;
 
 @Component
@@ -38,7 +39,10 @@ public class WinningMomentsStrategy implements PrizeDrawStrategy {
         String userId = (drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail())
                 .toLowerCase();
         Instant currentTime = Instant.now();
-        promoCodeService.checkAndActivatePromoCode(promoCode, serial, userId, currentTime);
+        DesiredArticle desiredArticle = drawRequest.getDesiredArticle();
+        Supermarket supermarket = drawRequest.getSupermarket();
+        promoCodeService.checkAndActivatePromoCode(promoCode, serial, userId,
+                currentTime, desiredArticle, supermarket);
 
         Prize prize = prizeRepository.tryWinPrize(currentTime).orElse(null);
         if (prize == null) {
