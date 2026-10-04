@@ -1,4 +1,4 @@
-package com.anhub.prize_draw_system.admin.dto;
+package com.anhub.prize_draw_system.statistics.dto;
 
 import com.anhub.prize_draw_system.draw.enumerated.Supermarket;
 import lombok.AllArgsConstructor;

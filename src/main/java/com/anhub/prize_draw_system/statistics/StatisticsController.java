@@ -1,7 +1,7 @@
-package com.anhub.prize_draw_system.admin;
+package com.anhub.prize_draw_system.statistics;
 
-import com.anhub.prize_draw_system.admin.dto.DesiredArticleStatisticsDTO;
-import com.anhub.prize_draw_system.admin.dto.SupermarketStatisticsDTO;
+import com.anhub.prize_draw_system.statistics.dto.DesiredArticleStatisticsDTO;
+import com.anhub.prize_draw_system.statistics.dto.SupermarketStatisticsDTO;
 import com.anhub.prize_draw_system.promocodes.PromoCodeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -12,18 +12,18 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/admin")
+@RequestMapping("/api/statistics")
 @RequiredArgsConstructor
-public class AdminController {
+public class StatisticsController {
 
     private final PromoCodeService promoCodeService;
 
-    @GetMapping("/statistics/desired-articles")
+    @GetMapping("/desired-articles")
     public ResponseEntity<List<DesiredArticleStatisticsDTO>> getDesiredArticlesStatistics() {
         return ResponseEntity.ok(promoCodeService.getDesiredArticlesStatistics());
     }
 
-    @GetMapping("/statistics/supermarkets")
+    @GetMapping("/supermarkets")
     public ResponseEntity<List<SupermarketStatisticsDTO>> getSupermarketStatistics() {
         return ResponseEntity.ok(promoCodeService.getSupermarketStatistics());
     }

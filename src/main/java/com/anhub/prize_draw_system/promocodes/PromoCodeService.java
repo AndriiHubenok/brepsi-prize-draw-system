@@ -1,7 +1,7 @@
 package com.anhub.prize_draw_system.promocodes;
 
-import com.anhub.prize_draw_system.admin.dto.DesiredArticleStatisticsDTO;
-import com.anhub.prize_draw_system.admin.dto.SupermarketStatisticsDTO;
+import com.anhub.prize_draw_system.statistics.dto.DesiredArticleStatisticsDTO;
+import com.anhub.prize_draw_system.statistics.dto.SupermarketStatisticsDTO;
 import com.anhub.prize_draw_system.draw.enumerated.DesiredArticle;
 import com.anhub.prize_draw_system.draw.enumerated.Supermarket;
 import com.anhub.prize_draw_system.promocodes.exceptions.AlreadyActivatedPromoCode;
