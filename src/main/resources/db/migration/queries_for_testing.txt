@@ -1,0 +1,16 @@
+=== Set prize pool status to 'CLAIMED' ===
+
+UPDATE prize_pool
+SET status = 'CLAIMED',
+    winner_user_id = 'SYSTEM_SIMULATED',
+    claimed_time = release_time
+WHERE status = 'AVAILABLE'
+  AND release_time <= NOW();
+
+=== Fallback to 'AVAILABLE' ===
+
+UPDATE prize_pool
+SET status = 'AVAILABLE',
+    winner_user_id = NULL,
+    claimed_time = NULL
+WHERE winner_user_id = 'SYSTEM_SIMULATED';
