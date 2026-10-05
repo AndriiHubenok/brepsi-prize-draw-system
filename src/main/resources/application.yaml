@@ -12,3 +12,8 @@ security:
   jwt:
     secret-key: 0dac6e584cb74eae3468cd84ef70111987cfb0a52d726f780ddf761e93a17628
     expiration-time: 3600000
+
+token:
+    bucket:
+        capacity: 3.0
+        refill-rate-per-second: 0.00567
