@@ -3,7 +3,6 @@ package com.anhub.prize_draw_system.draw;
 import com.anhub.prize_draw_system.draw.dto.DrawRequest;
 import com.anhub.prize_draw_system.draw.dto.PrizeDTO;
 import com.anhub.prize_draw_system.prizes.Prize;
-import com.anhub.prize_draw_system.prizes.Voucher;
 import com.anhub.prize_draw_system.prizes.VoucherService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +18,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DrawController {
 
-    private final PrizeDrawStrategy prizeDrawStrategy;
+    private final PrizeDrawOrchestrator prizeDrawOrchestrator;
     private final VoucherService voucherService;
 
     @PostMapping
     public ResponseEntity<PrizeDTO> draw(@RequestBody DrawRequest drawRequest) {
-        Optional<Prize> prize = prizeDrawStrategy.tryWinPrize(drawRequest);
+        Optional<Prize> prize = prizeDrawOrchestrator.executeDraw(drawRequest);
         PrizeDTO prizeDTO = new PrizeDTO();
 
         if (prize.isEmpty()) {

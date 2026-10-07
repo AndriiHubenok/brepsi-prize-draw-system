@@ -32,5 +32,5 @@ public interface PrizeRepository extends JpaRepository<Prize, Long> {
             )
             RETURNING *
             """, nativeQuery = true)
-    Optional<Prize> claimAvailablePrize(String userId, String promoCode, Instant currentTime);
+    Optional<Prize> claimAvailablePrize(String userId, String promoCode, Instant claimedTime);
 }
