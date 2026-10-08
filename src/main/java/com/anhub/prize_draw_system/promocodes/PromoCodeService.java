@@ -1,5 +1,7 @@
 package com.anhub.prize_draw_system.promocodes;
 
+import com.anhub.prize_draw_system.draw.dto.DrawRequest;
+import com.anhub.prize_draw_system.draw.exceptions.IncorrectPromoCode;
 import com.anhub.prize_draw_system.statistics.dto.DesiredArticleStatisticsDTO;
 import com.anhub.prize_draw_system.statistics.dto.SupermarketStatisticsDTO;
 import com.anhub.prize_draw_system.draw.enumerated.DesiredArticle;
@@ -17,9 +19,21 @@ import java.util.stream.Collectors;
 public class PromoCodeService {
 
     private final ActivatedPromoCodeRepository activatedPromoCodeRepository;
+    private final CryptoPromoCodeService cryptoPromoCodeService;
 
-    public void checkAndActivatePromoCode(String promoCode, Long serial, String userId,
-                                          Instant activatedAt, DesiredArticle desiredArticle, Supermarket supermarket) {
+    public void checkAndActivatePromoCode(DrawRequest drawRequest, Instant activatedAt) {
+
+        String promoCode = drawRequest.getPromoCode();
+
+        Long serial = cryptoPromoCodeService.validateAndExtractSerial(promoCode);
+        if (serial == null) {
+            throw new IncorrectPromoCode(promoCode);
+        }
+
+        String userId = (drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail())
+                .toLowerCase();
+        DesiredArticle desiredArticle = drawRequest.getDesiredArticle();
+        Supermarket supermarket = drawRequest.getSupermarket();
 
         boolean isActivated = activatedPromoCodeRepository.existsBySerialId(serial);
         if (isActivated) {

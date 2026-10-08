@@ -1,8 +1,10 @@
 package com.anhub.prize_draw_system.prizes;
 
+import com.anhub.prize_draw_system.prizes.enumerated.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
@@ -33,4 +35,11 @@ public interface PrizeRepository extends JpaRepository<Prize, Long> {
             RETURNING *
             """, nativeQuery = true)
     Optional<Prize> claimAvailablePrize(String userId, String promoCode, Instant claimedTime);
+
+    @Query("""
+    SELECT count(p) FROM Prize p 
+    WHERE p.status = 'AVAILABLE' 
+      AND p.releaseTime <= :endOfToday
+    """)
+    int countAvailablePrizesForToday(@Param("endOfToday") Instant endOfToday);
 }

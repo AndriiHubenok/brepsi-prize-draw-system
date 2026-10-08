@@ -1,50 +1,55 @@
-package com.anhub.prize_draw_system.draw.token_bucket;
+package com.anhub.prize_draw_system.draw.dynamic_rng;
 
 import com.anhub.prize_draw_system.draw.PrizeDrawStrategy;
 import com.anhub.prize_draw_system.draw.dto.DrawRequest;
-import com.anhub.prize_draw_system.draw.enumerated.DesiredArticle;
 import com.anhub.prize_draw_system.draw.enumerated.DrawAlgorithmType;
-import com.anhub.prize_draw_system.draw.enumerated.Supermarket;
-import com.anhub.prize_draw_system.draw.exceptions.IncorrectPromoCode;
 import com.anhub.prize_draw_system.prizes.Prize;
 import com.anhub.prize_draw_system.prizes.PrizeRepository;
-import com.anhub.prize_draw_system.prizes.enumerated.Status;
-import com.anhub.prize_draw_system.promocodes.CryptoPromoCodeService;
 import com.anhub.prize_draw_system.promocodes.PromoCodeService;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TokenBucketStrategy implements PrizeDrawStrategy {
+public class DynamicRngStrategy implements PrizeDrawStrategy {
 
     private final PromoCodeService promoCodeService;
     private final PrizeRepository prizeRepository;
-    private final TokenBucket tokenBucket;
+    private final DynamicProbabilityEngine dynamicProbabilityEngine;
 
     @Override
-    @Transactional
-    public synchronized Optional<Prize> tryWinPrize(DrawRequest drawRequest) {
+    public Optional<Prize> tryWinPrize(DrawRequest drawRequest) {
 
         Instant currentTime = Instant.now();
         promoCodeService.checkAndActivatePromoCode(drawRequest, currentTime);
 
-        if (!tokenBucket.tryConsume()) {
+        double currentProbability = dynamicProbabilityEngine.calculateCurrentProbability();
+        if (currentProbability <= 0.0) {
             return Optional.empty();
         }
 
-        Optional<Prize> claimedPrize = prizeRepository.claimAvailablePrize(drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail(),
-                drawRequest.getPromoCode(), currentTime);
+        double roll = ThreadLocalRandom.current().nextDouble();
+
+        if (roll >= currentProbability) {
+            return Optional.empty();
+        }
 
         String userId = drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail();
+        Optional<Prize> claimedPrize = prizeRepository.claimAvailablePrize(
+                drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail(),
+                drawRequest.getPromoCode(),
+                currentTime
+        );
+
         if (claimedPrize.isPresent()) {
-            log.info("Win by algorithm: {}, User: {}", getType().toString(), userId);
+            dynamicProbabilityEngine.decrementPrizeCache();
+            log.info("Win by algorithm: {}, User: {}, Chance: {}", getType().toString(), userId, currentProbability);
         }
 
         return claimedPrize;
@@ -52,6 +57,6 @@ public class TokenBucketStrategy implements PrizeDrawStrategy {
 
     @Override
     public DrawAlgorithmType getType() {
-        return DrawAlgorithmType.TOKEN_BUCKET;
+        return DrawAlgorithmType.DYNAMIC_RNG;
     }
 }

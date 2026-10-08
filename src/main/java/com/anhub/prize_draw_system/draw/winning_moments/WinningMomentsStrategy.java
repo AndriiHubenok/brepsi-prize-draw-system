@@ -13,36 +13,26 @@ import com.anhub.prize_draw_system.promocodes.CryptoPromoCodeService;
 import com.anhub.prize_draw_system.promocodes.PromoCodeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.Optional;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class WinningMomentsStrategy implements PrizeDrawStrategy {
 
-    private final CryptoPromoCodeService cryptoPromoCodeService;
     private final PromoCodeService promoCodeService;
     private final PrizeRepository prizeRepository;
 
     @Override
     @Transactional
     public synchronized Optional<Prize> tryWinPrize(DrawRequest drawRequest) {
-        String promoCode = drawRequest.getPromoCode();
 
-        Long serial = cryptoPromoCodeService.validateAndExtractSerial(promoCode);
-        if (serial == null) {
-            throw new IncorrectPromoCode(promoCode);
-        }
-
-        String userId = (drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail())
-                .toLowerCase();
         Instant currentTime = Instant.now();
-        DesiredArticle desiredArticle = drawRequest.getDesiredArticle();
-        Supermarket supermarket = drawRequest.getSupermarket();
-        promoCodeService.checkAndActivatePromoCode(promoCode, serial, userId,
-                currentTime, desiredArticle, supermarket);
+        promoCodeService.checkAndActivatePromoCode(drawRequest, currentTime);
 
         Prize prize = prizeRepository.tryWinPrize(currentTime).orElse(null);
         if (prize == null) {
@@ -51,9 +41,10 @@ public class WinningMomentsStrategy implements PrizeDrawStrategy {
 
         prize.setStatus(Status.CLAIMED);
         prize.setClaimedTime(currentTime);
-        prize.setPromoCode(promoCode);
-        prize.setWinnerUserId(userId);
+        prize.setPromoCode(drawRequest.getPromoCode());
+        prize.setWinnerUserId(drawRequest.getName() + drawRequest.getSurname() + drawRequest.getEmail());
         prizeRepository.save(prize);
+        log.info("Win by algorithm: {}, User: {}", getType().toString(), prize.getWinnerUserId());
 
         return Optional.of(prize);
     }

@@ -17,3 +17,11 @@ token:
     bucket:
         capacity: 3.0
         refill-rate-per-second: 0.00567
+
+promo:
+  dynamic-rng:
+    expected-daily-traffic: 10000
+    min-probability: 0.005
+    max-probability: 0.20
+
+zoneId: "Europe/Berlin"
