@@ -24,4 +24,5 @@ promo:
     min-probability: 0.005
     max-probability: 0.20
 
-zoneId: "Europe/Berlin"
+mailgun:
+  from-name: "Pepsi Promo"
