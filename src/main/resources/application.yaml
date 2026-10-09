@@ -25,4 +25,4 @@ promo:
     max-probability: 0.20
 
 mailgun:
-  from-name: "Pepsi Promo"
+  from-name: "Brepsi Promo"
