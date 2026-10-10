@@ -10,6 +10,26 @@ High-performance, event-driven promotional prize draw and voucher distribution p
 
 The platform processes high-concurrency user entries, performs cryptographic validation of offline promo codes, executes configurable prize draw algorithms in real time, issues consolation vouchers, and delivers asynchronous prize notifications via RabbitMQ and Mailgun.
 
+## Motivation
+
+Promotional sweepstakes with "codes under bottle caps" are a classic marketing mechanic used by consumer brands worldwide. While conceptually straightforward, distributing a finite pool of prizes fairly across millions of participants is a surprisingly nuanced engineering challenge.
+
+### The Observation
+While observing a large-scale national promotional campaign, an interesting pattern emerged:
+* **The Midnight Reset:** Many platforms rely on simple daily prize quotas that refresh at midnight.
+* **Predictable Win Windows:** Between 00:00 and 01:00 AM, participant activity drops while prize quotas are fully replenished. Over several weeks of tracking, entering codes during these quiet night windows resulted in unusually high win rates, while regular daytime participants competed for already depleted prize pools.
+
+### Why This Project?
+This project started out of pure curiosity – a hands-on experiment to explore how promotional engines work under the hood and understand the real-world engineering hurdles behind them:
+* How to prevent automated farming and predictable win windows without hurting genuine users.
+* How to handle concurrent requests and avoid race conditions under high load.
+* How to balance prize distribution mathematically across varying day and night traffic.
+
+To explore solutions to these problems, this Spring Boot service implements and compares **three balanced distribution strategies**:
+* **Weighted Winning Moments:** Pre-scheduled time slots proportionally distributed across active daytime hours.
+* **Token Bucket:** Smooth rate-limiting mechanics that release prizes progressively and prevent rapid depletion.
+* **Dynamic Probability:** An adaptive engine that recalculates win odds in real time based on active participant traffic. based on real-time participant traffic.
+
 ---
 
 ## Table of Contents

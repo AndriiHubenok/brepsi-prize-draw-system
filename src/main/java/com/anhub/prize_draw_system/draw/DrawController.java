@@ -52,7 +52,7 @@ public class DrawController {
         }
         if (prizeDTO.getName().equals("CAP")) {
             event.setPrizeName("Cap");
-        } else if (prizeDTO.getName().equals("T-SHIRT")) {
+        } else if (prizeDTO.getName().equals("TSHIRT")) {
             event.setPrizeName("T-Shirt");
         } else if (prizeDTO.getName().equals("SHOPPER")) {
             event.setPrizeName("Shopper Bag");
